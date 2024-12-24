@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom right, #4facfe, #00f2fe);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            box-sizing: border-box;
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 400px;
+            padding: 2em;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #form-title {
+            text-align: center;
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 1.5em;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        td {
+            padding: 0.5em;
+        }
+
+        td:first-child {
+            text-align: right;
+            font-weight: bold;
+            color: #555;
+        }
+
+        td:last-child {
+            text-align: left;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 0.8em;
+            margin-top: 0.5em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border: 1px solid #4facfe;
+            box-shadow: 0 0 5px rgba(79, 172, 254, 0.5);
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 0.8em;
+            margin-top: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4facfe;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #00b2f7;
+            transform: scale(1.05);
+        }
+
+        .signup {
+            text-align: center;
+            margin-top: 1em;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .signup a {
+            color: #4facfe;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .signup a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3 id="form-title">Login</h3>
+        <form method="POST" action="">
+            {% csrf_token %}
+            <table>
+                <tr>
+                    <td>{{ form.username.label_tag }}</td>
+                    <td>{{ form.username }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.password.label_tag }}</td>
+                    <td>{{ form.password }}</td>
+                </tr>
+            </table>
+            <div class="login">
+                <input type="submit" value="Login">
+            </div>
+            <div class="signup">
+                Don't have an account? <a href="/signup">Signup</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

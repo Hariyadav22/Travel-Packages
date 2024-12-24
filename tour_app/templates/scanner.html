@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{% csrf_token %}">
+    <title>QR Code Scanner</title>
+    <style>
+        #preview {
+            width: 100%;
+            height: auto;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <h1>QR Code Scanner</h1>
+    <video id="preview" autoplay></video>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+    <script>
+        const video = document.getElementById('preview');
+        const canvas = document.createElement('canvas');
+        const canvasContext = canvas.getContext('2d');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        async function startScanning() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = stream;
+                video.setAttribute('playsinline', true);
+                video.play();
+                scanQRCode();
+            } catch (err) {
+                console.error("Error accessing camera:", err);
+            }
+        }
+
+        function scanQRCode() {
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth;
+                canvasContext.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = canvasContext.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, canvas.width, canvas.height, {
+                    inversionAttempts: "dontInvert",
+                });
+
+                if (code) {
+                    console.log("QR Code Data:", code.data);
+                    sendQRCodeData(code.data);
+                }
+            }
+            requestAnimationFrame(scanQRCode);
+        }
+
+        function sendQRCodeData(qrCodeData) {
+            fetch('/process_qr/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({ qr_code_data: qrCodeData }),
+            })
+            .then(response => response.json())
+            .then(data => console.log('Server Response:', data))
+            .catch(error => console.error('Error:', error));
+        }
+
+        startScanning();
+    </script>
+</body>
+</html>
